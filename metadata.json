@@ -1,0 +1,8 @@
+{
+  "name": "Thank You Life Fest 2026 — Forest of Magic",
+  "description": "Thank You Life Fest 2026 | We are One - Chúng ta là Một | ",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,227 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isBootstrappedAdmin() {
+      return isVerifiedUser() && request.auth.token.email == 'thankyoulifefest@gmail.com';
+    }
+
+    function isAdmin() {
+      return isBootstrappedAdmin() || (
+        isVerifiedUser() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidRegistration(data) {
+      return data.keys().hasAll([
+          'refCode', 'role', 'name', 'phone', 'email', 'guests',
+          'attendanceType', 'meals', 'notes', 'contributionAmount',
+          'contributionTier', 'bankId', 'bankApp', 'category',
+          'description', 'team', 'reason', 'invitationLetter',
+          'paymentStatus', 'checkInStatus', 'syncedToGoogle',
+          'adminNotes', 'verifiedBy', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'refCode', 'role', 'name', 'phone', 'email', 'guests',
+          'attendanceType', 'meals', 'notes', 'contributionAmount',
+          'contributionTier', 'bankId', 'bankApp', 'category',
+          'description', 'team', 'reason', 'invitationLetter',
+          'paymentStatus', 'checkInStatus', 'syncedToGoogle',
+          'adminNotes', 'verifiedBy', 'createdAt', 'updatedAt'
+        ]) &&
+        data.refCode is string && data.refCode.size() >= 4 && data.refCode.size() <= 24 && data.refCode.matches('^TYLF26-[A-Z0-9]+$') &&
+        data.role in ['attendee', 'artist', 'volunteer'] &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 120 &&
+        data.phone is string && data.phone.size() >= 5 && data.phone.size() <= 40 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 160 &&
+        data.guests is string && data.guests.size() <= 100 &&
+        data.attendanceType is string && data.attendanceType.size() <= 120 &&
+        data.meals is string && data.meals.size() <= 300 &&
+        data.notes is string && data.notes.size() <= 1000 &&
+        data.contributionAmount is int && data.contributionAmount >= 0 && data.contributionAmount <= 1000000000 &&
+        data.contributionTier is string && data.contributionTier.size() <= 80 &&
+        data.bankId is string && data.bankId.size() <= 20 &&
+        data.bankApp is string && data.bankApp.size() <= 80 &&
+        data.category is string && data.category.size() <= 150 &&
+        data.description is string && data.description.size() <= 2000 &&
+        data.team is string && data.team.size() <= 150 &&
+        data.reason is string && data.reason.size() <= 2000 &&
+        data.invitationLetter is string && data.invitationLetter.size() <= 3000 &&
+        data.paymentStatus in ['pending', 'verified', 'not_applicable'] &&
+        data.checkInStatus in ['registered', 'checked_in', 'cancelled'] &&
+        data.syncedToGoogle is bool &&
+        data.adminNotes is string && data.adminNotes.size() <= 1000 &&
+        data.verifiedBy is string && data.verifiedBy.size() <= 160 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidAdminUser(data, adminUid) {
+      return data.keys().hasAll(['uid', 'email', 'displayName', 'addedBy', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'displayName', 'addedBy', 'createdAt']) &&
+        data.uid is string && data.uid == adminUid && data.uid.size() >= 1 && data.uid.size() <= 128 &&
+        data.email is string && data.email.size() >= 3 && data.email.size() <= 160 &&
+        data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 120 &&
+        data.addedBy is string && data.addedBy.size() >= 3 && data.addedBy.size() <= 160 &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidCampaignSettings(data) {
+      return data.keys().hasAll(['goalVnd', 'offlineVerifiedVnd', 'offlineDonorCount', 'updatedBy', 'updatedAt']) &&
+        data.keys().hasOnly([
+          'goalVnd', 'offlineVerifiedVnd', 'offlineDonorCount',
+          'musicUrl', 'musicTitle', 'updatedBy', 'updatedAt'
+        ]) &&
+        data.goalVnd is int && data.goalVnd >= 0 && data.goalVnd <= 10000000000 &&
+        data.offlineVerifiedVnd is int && data.offlineVerifiedVnd >= 0 && data.offlineVerifiedVnd <= 10000000000 &&
+        data.offlineDonorCount is int && data.offlineDonorCount >= 0 && data.offlineDonorCount <= 1000000 &&
+        (!('musicUrl' in data) || (
+          data.musicUrl is string &&
+          data.musicUrl.size() <= 500 &&
+          (data.musicUrl == '' || data.musicUrl.matches('^https://.*'))
+        )) &&
+        (!('musicTitle' in data) || (
+          data.musicTitle is string &&
+          data.musicTitle.size() <= 140
+        )) &&
+        data.updatedBy is string && data.updatedBy.size() >= 3 && data.updatedBy.size() <= 160 &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidPublicStats(data) {
+      return data.keys().hasAll([
+          'goalVnd', 'verifiedVnd', 'pledgedVnd',
+          'totalRegistrations', 'totalParticipants', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'goalVnd', 'verifiedVnd', 'pledgedVnd',
+          'totalRegistrations', 'totalParticipants', 'updatedAt'
+        ]) &&
+        data.goalVnd is int && data.goalVnd >= 0 && data.goalVnd <= 10000000000 &&
+        data.verifiedVnd is int && data.verifiedVnd >= 0 && data.verifiedVnd <= 10000000000 &&
+        data.pledgedVnd is int && data.pledgedVnd >= 0 && data.pledgedVnd <= 10000000000 &&
+        data.totalRegistrations is int && data.totalRegistrations >= 0 && data.totalRegistrations <= 1000000 &&
+        data.totalParticipants is int && data.totalParticipants >= 0 && data.totalParticipants <= 5000000 &&
+        data.updatedAt is timestamp;
+    }
+
+    match /registrations/{registrationId} {
+      allow get: if isValidId(registrationId) && isAdmin();
+      allow list: if isAdmin();
+      allow create: if isValidId(registrationId) &&
+        isValidRegistration(incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (
+          isAdmin() || (
+            incoming().paymentStatus in ['pending', 'not_applicable'] &&
+            incoming().checkInStatus == 'registered' &&
+            incoming().adminNotes == '' &&
+            incoming().verifiedBy == ''
+          )
+        );
+      allow update: if isValidId(registrationId) &&
+        isAdmin() &&
+        isValidRegistration(incoming()) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'paymentStatus', 'checkInStatus', 'adminNotes', 'verifiedBy',
+          'contributionAmount', 'contributionTier', 'notes', 'guests',
+          'attendanceType', 'meals', 'syncedToGoogle', 'updatedAt'
+        ]);
+      allow delete: if isValidId(registrationId) && isAdmin();
+    }
+
+    match /admins/{adminUid} {
+      allow get: if isValidId(adminUid) && (isBootstrappedAdmin() || (isVerifiedUser() && request.auth.uid == adminUid));
+      allow list: if isBootstrappedAdmin();
+      allow create: if isValidId(adminUid) &&
+        isBootstrappedAdmin() &&
+        isValidAdminUser(incoming(), adminUid) &&
+        incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isValidId(adminUid) && isBootstrappedAdmin();
+    }
+
+    match /campaignSettings/{settingId} {
+      allow get: if isValidId(settingId);
+      allow list: if false;
+      allow create: if isValidId(settingId) &&
+        isAdmin() &&
+        isValidCampaignSettings(incoming()) &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(settingId) &&
+        isAdmin() &&
+        isValidCampaignSettings(incoming()) &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'goalVnd', 'offlineVerifiedVnd', 'offlineDonorCount',
+          'musicUrl', 'musicTitle', 'updatedBy', 'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+
+    match /publicStats/{statId} {
+      allow get: if isValidId(statId);
+      allow list: if false;
+      allow create: if isValidId(statId) &&
+        isValidPublicStats(incoming()) &&
+        incoming().updatedAt == request.time &&
+        (
+          isAdmin() || (
+            statId == 'tylf2026' &&
+            incoming().goalVnd == 150000000 &&
+            incoming().verifiedVnd == 0 &&
+            incoming().pledgedVnd >= 0 && incoming().pledgedVnd <= 100000000 &&
+            incoming().totalRegistrations == 1 &&
+            incoming().totalParticipants >= 1 && incoming().totalParticipants <= 50
+          )
+        );
+      allow update: if isValidId(statId) &&
+        isValidPublicStats(incoming()) &&
+        incoming().updatedAt == request.time &&
+        (
+          isAdmin() || (
+            statId == 'tylf2026' &&
+            incoming().goalVnd == existing().goalVnd &&
+            incoming().verifiedVnd == existing().verifiedVnd &&
+            incoming().pledgedVnd >= existing().pledgedVnd &&
+            incoming().pledgedVnd <= existing().pledgedVnd + 100000000 &&
+            incoming().totalRegistrations == existing().totalRegistrations + 1 &&
+            incoming().totalParticipants >= existing().totalParticipants + 1 &&
+            incoming().totalParticipants <= existing().totalParticipants + 50 &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'pledgedVnd', 'totalRegistrations', 'totalParticipants', 'updatedAt'
+            ])
+          )
+        );
+      allow delete: if false;
+    }
+  }
+}

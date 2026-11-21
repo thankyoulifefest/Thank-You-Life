@@ -1,0 +1,302 @@
+{
+  "entities": {
+    "Registration": {
+      "title": "Registration",
+      "description": "A festival participant, artist, volunteer, or donor registration paired with a VietQR reference code and verification status.",
+      "type": "object",
+      "properties": {
+        "refCode": {
+          "type": "string",
+          "description": "Unique VietQR reconciliation reference code (e.g. TYLF26-A7K9).",
+          "minLength": 4,
+          "maxLength": 24,
+          "pattern": "^TYLF26-[A-Z0-9]+$"
+        },
+        "role": {
+          "type": "string",
+          "description": "Participant role at Thank You Life Fest 2026.",
+          "enum": ["attendee", "artist", "volunteer"]
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of registrant or donor.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number or Zalo handle.",
+          "minLength": 5,
+          "maxLength": 40
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email address.",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "guests": {
+          "type": "string",
+          "description": "Group size description for attendees.",
+          "maxLength": 100
+        },
+        "attendanceType": {
+          "type": "string",
+          "description": "Attendance format (Day picnic, Overnight camping, Remote donor).",
+          "maxLength": 120
+        },
+        "meals": {
+          "type": "string",
+          "description": "Selected plant-based meal preferences.",
+          "maxLength": 300
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional participant notes or potluck item.",
+          "maxLength": 1000
+        },
+        "contributionAmount": {
+          "type": "integer",
+          "description": "Pledged donation amount in VND."
+        },
+        "contributionTier": {
+          "type": "string",
+          "description": "Formatted donation tier label.",
+          "maxLength": 80
+        },
+        "bankId": {
+          "type": "string",
+          "description": "Selected Vietnamese bank identifier.",
+          "maxLength": 20
+        },
+        "bankApp": {
+          "type": "string",
+          "description": "Selected Vietnamese bank display name.",
+          "maxLength": 80
+        },
+        "category": {
+          "type": "string",
+          "description": "Artist or workshop discipline.",
+          "maxLength": 150
+        },
+        "description": {
+          "type": "string",
+          "description": "Artist performance or workshop proposal.",
+          "maxLength": 2000
+        },
+        "team": {
+          "type": "string",
+          "description": "Volunteer service team.",
+          "maxLength": 150
+        },
+        "reason": {
+          "type": "string",
+          "description": "Volunteer motivation note.",
+          "maxLength": 2000
+        },
+        "invitationLetter": {
+          "type": "string",
+          "description": "Co-created personalized invitation letter text.",
+          "maxLength": 3000
+        },
+        "paymentStatus": {
+          "type": "string",
+          "description": "Bank transfer verification status managed by organizers.",
+          "enum": ["pending", "verified", "not_applicable"]
+        },
+        "checkInStatus": {
+          "type": "string",
+          "description": "Event attendance check-in status.",
+          "enum": ["registered", "checked_in", "cancelled"]
+        },
+        "syncedToGoogle": {
+          "type": "boolean",
+          "description": "Whether the submission also synced to the Google Apps Script sheet."
+        },
+        "adminNotes": {
+          "type": "string",
+          "description": "Internal organizer verification or coordination notes.",
+          "maxLength": 1000
+        },
+        "verifiedBy": {
+          "type": "string",
+          "description": "Email of organizer who verified transfer or updated status.",
+          "maxLength": 160
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server last-updated timestamp."
+        }
+      },
+      "required": [
+        "refCode",
+        "role",
+        "name",
+        "phone",
+        "email",
+        "guests",
+        "attendanceType",
+        "meals",
+        "notes",
+        "contributionAmount",
+        "contributionTier",
+        "bankId",
+        "bankApp",
+        "category",
+        "description",
+        "team",
+        "reason",
+        "invitationLetter",
+        "paymentStatus",
+        "checkInStatus",
+        "syncedToGoogle",
+        "adminNotes",
+        "verifiedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized festival organizer allowed to access the admin console.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the organizer.",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified organizer email.",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Organizer name.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "addedBy": {
+          "type": "string",
+          "description": "Email of super-admin who added this organizer.",
+          "maxLength": 160
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server creation timestamp."
+        }
+      },
+      "required": ["uid", "email", "displayName", "addedBy", "createdAt"]
+    },
+    "CampaignSettings": {
+      "title": "CampaignSettings",
+      "description": "Campaign-wide fundraising, offline reconciliation, and official online music soundtrack configuration.",
+      "type": "object",
+      "properties": {
+        "goalVnd": {
+          "type": "integer",
+          "description": "Target fundraising goal in VND."
+        },
+        "offlineVerifiedVnd": {
+          "type": "integer",
+          "description": "Verified offline or direct cash/bank donations not tied to a web registration."
+        },
+        "offlineDonorCount": {
+          "type": "integer",
+          "description": "Count of offline donors."
+        },
+        "musicUrl": {
+          "type": "string",
+          "description": "Optional HTTPS online music link (YouTube, SoundCloud, Spotify, Google Drive, or direct audio) for festival background music.",
+          "maxLength": 500
+        },
+        "musicTitle": {
+          "type": "string",
+          "description": "Display title for the configured festival background music track.",
+          "maxLength": 140
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Email of organizer who last updated settings.",
+          "maxLength": 160
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of update."
+        }
+      },
+      "required": ["goalVnd", "offlineVerifiedVnd", "offlineDonorCount", "updatedBy", "updatedAt"]
+    },
+    "PublicStats": {
+      "title": "PublicStats",
+      "description": "Publicly readable non-PII live aggregate tally of fundraising progress, verified donations, and registered participants.",
+      "type": "object",
+      "properties": {
+        "goalVnd": {
+          "type": "integer",
+          "description": "Target fundraising goal in VND."
+        },
+        "verifiedVnd": {
+          "type": "integer",
+          "description": "Total verified online + offline donations in VND."
+        },
+        "pledgedVnd": {
+          "type": "integer",
+          "description": "Total pledged online donations in VND (including pending transfers)."
+        },
+        "totalRegistrations": {
+          "type": "integer",
+          "description": "Total number of registrations + offline donors."
+        },
+        "totalParticipants": {
+          "type": "integer",
+          "description": "Estimated total headcount across all registered families, artists, volunteers, and offline donors."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest stat update."
+        }
+      },
+      "required": [
+        "goalVnd",
+        "verifiedVnd",
+        "pledgedVnd",
+        "totalRegistrations",
+        "totalParticipants",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/registrations/{registrationId}": {
+      "schema": { "$ref": "#/entities/Registration" },
+      "description": "All TYLF 2026 attendee, artist, volunteer, and donor registrations with PII isolated to verified admins."
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Co-organizer accounts granted read/manage privileges alongside the bootstrapped primary organizer."
+    },
+    "/campaignSettings/{settingId}": {
+      "schema": { "$ref": "#/entities/CampaignSettings" },
+      "description": "Publicly readable non-PII campaign goal and offline fund tally; writable only by verified admins."
+    },
+    "/publicStats/{statId}": {
+      "schema": { "$ref": "#/entities/PublicStats" },
+      "description": "Publicly readable non-PII live tally of pledged/verified funds and participant counts."
+    }
+  }
+}

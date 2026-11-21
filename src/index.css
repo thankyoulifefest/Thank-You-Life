@@ -1,0 +1,196 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --color-ivory: #FAF7F0;
+  --color-sage: #EFF4EE;
+  --color-sage-deep: #E0EAD9;
+  --color-forest: #2D4F3E;
+  --color-forest-dark: #1A3327;
+  --color-honey: #E89F3C;
+  --color-honey-dark: #C27B16;
+  --color-blossom: #E5989B;
+  --color-twilight: #7BA7BC;
+  --color-terracotta: #C86D51;
+  --color-lavender: #9B7BB8;
+  --color-bark: #24302A;
+  --color-moss: #4B5E53;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+    background-color: #FAF7F0;
+    color: #24302A;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+.watercolor-sunlit {
+  background:
+    radial-gradient(circle at 8% 12%, rgba(232, 159, 60, 0.16), transparent 42%),
+    radial-gradient(circle at 92% 18%, rgba(229, 152, 155, 0.16), transparent 42%),
+    radial-gradient(circle at 82% 88%, rgba(123, 167, 188, 0.14), transparent 45%),
+    #FAF7F0;
+}
+
+.watercolor-meadow {
+  background:
+    radial-gradient(circle at 10% 18%, rgba(123, 167, 188, 0.16), transparent 44%),
+    radial-gradient(circle at 90% 20%, rgba(232, 159, 60, 0.13), transparent 42%),
+    radial-gradient(circle at 50% 90%, rgba(108, 168, 50, 0.08), transparent 48%),
+    #EFF4EE;
+}
+
+.watercolor-blossom {
+  background:
+    radial-gradient(circle at 14% 22%, rgba(229, 152, 155, 0.15), transparent 42%),
+    radial-gradient(circle at 88% 14%, rgba(155, 123, 184, 0.12), transparent 44%),
+    radial-gradient(circle at 52% 88%, rgba(232, 159, 60, 0.12), transparent 48%),
+    #FAF7F0;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes beeDriftA {
+  0% {
+    transform: translate3d(0vw, 0vh, 0) rotate(-6deg);
+  }
+  25% {
+    transform: translate3d(14vw, -9vh, 0) rotate(5deg);
+  }
+  50% {
+    transform: translate3d(26vw, 4vh, 0) rotate(-3deg);
+  }
+  75% {
+    transform: translate3d(10vw, 12vh, 0) rotate(7deg);
+  }
+  100% {
+    transform: translate3d(0vw, 0vh, 0) rotate(-6deg);
+  }
+}
+
+@keyframes beeDriftB {
+  0% {
+    transform: translate3d(0vw, 0vh, 0) rotate(6deg) scaleX(-1);
+  }
+  25% {
+    transform: translate3d(-15vw, 8vh, 0) rotate(-4deg) scaleX(-1);
+  }
+  50% {
+    transform: translate3d(-24vw, -7vh, 0) rotate(4deg) scaleX(-1);
+  }
+  75% {
+    transform: translate3d(-9vw, -12vh, 0) rotate(-6deg) scaleX(-1);
+  }
+  100% {
+    transform: translate3d(0vw, 0vh, 0) rotate(6deg) scaleX(-1);
+  }
+}
+
+@keyframes beeDriftC {
+  0% {
+    transform: translate3d(0vw, 0vh, 0) rotate(-4deg);
+  }
+  33% {
+    transform: translate3d(-11vw, -11vh, 0) rotate(6deg);
+  }
+  66% {
+    transform: translate3d(9vw, -5vh, 0) rotate(-5deg);
+  }
+  100% {
+    transform: translate3d(0vw, 0vh, 0) rotate(-4deg);
+  }
+}
+
+@keyframes wingFlutter {
+  0%, 100% {
+    transform: scaleY(1) rotate(0deg);
+  }
+  50% {
+    transform: scaleY(0.72) rotate(-10deg);
+  }
+}
+
+@keyframes fireflyGlow {
+  0%, 100% {
+    opacity: 0.25;
+    transform: translate3d(0, 0, 0) scale(0.85);
+  }
+  50% {
+    opacity: 0.92;
+    transform: translate3d(10px, -16px, 0) scale(1.25);
+  }
+}
+
+@keyframes gentleFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -8px, 0);
+  }
+}
+
+.bee-flight-a {
+  animation: beeDriftA var(--flight-duration, 24s) ease-in-out infinite;
+  animation-delay: var(--flight-delay, 0s);
+  will-change: transform;
+}
+
+.bee-flight-b {
+  animation: beeDriftB var(--flight-duration, 28s) ease-in-out infinite;
+  animation-delay: var(--flight-delay, 0s);
+  will-change: transform;
+}
+
+.bee-flight-c {
+  animation: beeDriftC var(--flight-duration, 20s) ease-in-out infinite;
+  animation-delay: var(--flight-delay, 0s);
+  will-change: transform;
+}
+
+.bee-wing-flutter {
+  transform-origin: center bottom;
+  animation: wingFlutter 0.22s ease-in-out infinite;
+}
+
+.firefly-particle {
+  animation: fireflyGlow var(--glow-duration, 6s) ease-in-out infinite;
+  animation-delay: var(--glow-delay, 0s);
+  will-change: transform, opacity;
+}
+
+.gentle-float {
+  animation: gentleFloat 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  header, footer, .no-print, .ambient-magic-layer {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+}
